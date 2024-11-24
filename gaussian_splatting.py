@@ -210,11 +210,15 @@ def process_gaussian_batch(output, image_size, kernel_size, device):
     # Convert raw parameters to usable properties
     scale = torch.sigmoid(output[:, 0:2])
     rotation = np.pi / 2 * torch.tanh(output[:, 2])
+    alpha = torch.sigmoid(output[:, 3])
     colours = torch.sigmoid(output[:, 4:7])
     pixel_coords = torch.tanh(output[:, 7:9])
 
+    batch_size = output.shape[0]
+    colours_with_alpha = colours * alpha.view(batch_size, 1)
+
     g_tensor_batch = generate_2D_gaussian_splatting(
-        kernel_size, scale, rotation, pixel_coords, colours, image_size, device=device
+        kernel_size, scale, rotation, pixel_coords, colours_with_alpha, image_size, device=device
     )
 
     return g_tensor_batch

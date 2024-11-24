@@ -184,5 +184,5 @@ for epoch in range(num_epochs):
 
 final_loss = loss_history[-1]
 print(
-    f"Final Loss: {final_loss.item()}."
+    f"Final Loss: {final_loss}."
 )

@@ -7,10 +7,11 @@ import gc
 import os
 import imageio
 import yaml
-import requests
 from torch.optim import Adam
 from datetime import datetime
 from PIL import Image
+
+torch.manual_seed(42)  # To achieve reproducibility of the results
 
 
 def generate_2D_gaussian_splatting(
@@ -326,7 +327,7 @@ for epoch in range(num_epochs):
 
     colours_with_alpha = colours * alpha.view(batch_size, 1)
     g_tensor_batch = generate_2D_gaussian_splatting(
-        KERNEL_SIZE, scale, rotation, pixel_coords, colours, image_size, device=device
+        KERNEL_SIZE, scale, rotation, pixel_coords, colours_with_alpha, image_size, device=device
     )
     loss = combined_loss(g_tensor_batch, target_tensor, lambda_param=0.2)
 
@@ -461,7 +462,7 @@ for i in range(0, num_epochs, display_interval):
     image_files.append(f"{i}.jpg")
 
 # Create a video writer object
-writer = imageio.get_writer(os.path.join(directory, "video.mp4"), fps=2)
+writer = imageio.get_writer(os.path.join(directory, "video.mp4"))
 
 # Add images to the video writer
 for image_file in image_files:
