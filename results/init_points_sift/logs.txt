@@ -1,0 +1,19 @@
+Epoch 1/1001, Loss: 0.3473608195781708, on 343 points.
+Epoch 101/1001, Loss: 0.11036742478609085, on 343 points.
+Epoch 201/1001, Loss: 0.0704309493303299, on 343 points.
+Number of pruned points: 49
+Number of splitted points: 45
+Number of cloned points: 8
+Epoch 301/1001, Loss: 0.060766398906707764, on 343 points.
+Epoch 401/1001, Loss: 0.05371253192424774, on 396 points.
+Epoch 501/1001, Loss: 0.04973762482404709, on 396 points.
+Number of splitted points: 65
+Number of cloned points: 11
+Epoch 601/1001, Loss: 0.048117928206920624, on 396 points.
+Epoch 701/1001, Loss: 0.04485039412975311, on 472 points.
+Epoch 801/1001, Loss: 0.043140213936567307, on 472 points.
+Number of splitted points: 77
+Number of cloned points: 24
+Epoch 901/1001, Loss: 0.041751258075237274, on 472 points.
+Epoch 1001/1001, Loss: 0.03890965133905411, on 573 points.
+Final Loss: 0.03890965133905411.

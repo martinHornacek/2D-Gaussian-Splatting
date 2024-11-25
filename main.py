@@ -70,15 +70,15 @@ image_array = normalized_array
 target_tensor = torch.tensor(image_array, dtype=torch.float32, device=device)
 
 # Generate initial coordinates for Gaussians
-initial_coords = initialize_coords_from_image_using_random(image_array, total_number_of_gaussians)
+initial_coords = initialize_coords_from_image_using_random(image_array, 343)
 visualize_initial_points(image_array, initial_coords)
 
 # The Total Number of Gaussian can change based on the output of the initialization algorithm
-total_number_of_gaussians, _ = initial_coords.shape
+number_of_primary_samples, _ = initial_coords.shape
 
 # Get normalized coordinates and corresponding colors
 color_values, normalized_coords = get_normalized_coords_and_colors(
-    image_array, initial_coords, image_size
+    image_array, initial_coords, image_size, total_number_of_gaussians
 )
 
 # Apply inverse sigmoid (logit) and inverse tanh transformations to ensure unconstrained optimization

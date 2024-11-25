@@ -143,20 +143,29 @@ def generate_2D_gaussian_splatting(
 
 
 def get_normalized_coords_and_colors(
-    image_array, input_coords, image_size, device: str = "cpu"
+    image_array, input_coords, image_size, total_number_of_gaussians: int, device: str = "cpu"
 ):
     """
-    Convert pixel coordinates to normalized coordinates and extract corresponding color values.
+    Convert pixel coordinates to normalized coordinates and extract corresponding color values,
+    with padding to match the desired total number of Gaussians.
 
     Args:
         image_array: Image as numpy array
         input_coords: Pixel coordinates in [x, y] format
         image_size: Image dimensions as (height, width)
+        total_number_of_gaussians: Desired total number of Gaussians
         device (str): Computation device, default "cpu"
 
     Returns:
-        Tuple containing color values and normalized coordinates
+        Tuple containing color values and normalized coordinates, padded to match total_number_of_gaussians
     """
+    actual_samples = len(input_coords)
+    
+    if actual_samples > total_number_of_gaussians:
+        raise ValueError(
+            f"Initial coordinates ({actual_samples}) exceed requested number of Gaussians ({total_number_of_gaussians})"
+        )
+
     # Normalize pixel coordinates to [0,1] range by dividing by image dimensions
     normalized_coords = torch.tensor(
         input_coords / [image_size[0], image_size[1]], device=device
@@ -172,6 +181,27 @@ def get_normalized_coords_and_colors(
     pixel_colors = [image_array[coord[1], coord[0]] for coord in input_coords]
     pixel_colors_np = np.array(pixel_colors)
     pixel_colors_tensor = torch.tensor(pixel_colors_np, device=device).float()
+
+    # Handle padding if needed
+    if actual_samples < total_number_of_gaussians:
+        padding_size = total_number_of_gaussians - actual_samples
+        
+        # Create padding for coordinates
+        # Generate random positions in [0,1] range
+        rand_coords = torch.rand(padding_size, 2, device=device)
+        # Convert to [-1,1] range and center them like the original coordinates
+        padded_coords = (center_point - rand_coords) * 2.0
+        
+        # Pad the normalized coordinates
+        normalized_coords = torch.cat([normalized_coords, padded_coords], dim=0)
+        
+        # Pad the color values with zeros
+        color_padding = torch.zeros(
+            (padding_size, pixel_colors_tensor.size(1)),
+            device=device,
+            dtype=pixel_colors_tensor.dtype
+        )
+        pixel_colors_tensor = torch.cat([pixel_colors_tensor, color_padding], dim=0)
 
     return pixel_colors_tensor, normalized_coords
 
