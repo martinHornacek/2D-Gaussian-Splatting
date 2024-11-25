@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 from skimage.color import rgb2lab
 from sklearn.cluster import KMeans
 
 
-def initialize_coords_from_image_using_segmentation(image_array, number_of_samples):
+def initialize_coords_from_image_using_segmentation(image_array, number_of_samples, display_segmentation=True):
     """
     Initialize coordinates by segmenting an image and placing points at segment centroids.
 
@@ -12,6 +13,7 @@ def initialize_coords_from_image_using_segmentation(image_array, number_of_sampl
         image_array (np.ndarray): Input image as numpy array of shape (width, height, channels)
                                  with float64 values in range [0.0, 1.0]
         number_of_samples (int): Number of initial coordinates to generate.
+        display_segmentation (bool, optional): Whether to display segmentation visualization. Defaults to False.
 
     Returns:
         tuple: (np.ndarray, np.ndarray, np.ndarray) containing:
@@ -29,8 +31,7 @@ def initialize_coords_from_image_using_segmentation(image_array, number_of_sampl
     lab_image = rgb2lab(image_array_uint8).reshape((-1, 3))
 
     # Perform k-means clustering to segment the image
-    kmeans = KMeans(n_clusters=number_of_samples,
-                    random_state=0).fit(lab_image)
+    kmeans = KMeans(n_clusters=number_of_samples, random_state=0).fit(lab_image)
     labels = kmeans.labels_.reshape((height, width))
 
     # Calculate the centroid for each segment
@@ -61,6 +62,35 @@ def initialize_coords_from_image_using_segmentation(image_array, number_of_sampl
     # Ensure coordinates are within bounds
     initial_coords[:, 0] = np.clip(initial_coords[:, 0], 0, width - 1)
     initial_coords[:, 1] = np.clip(initial_coords[:, 1], 0, height - 1)
+
+    # Optional visualization of segmentation
+    if display_segmentation:
+        plt.figure(figsize=(15, 5))
+        
+        # Original image
+        plt.subplot(1, 3, 1)
+        plt.title('Original Image')
+        plt.imshow(image_array_uint8)
+        plt.axis('off')
+        
+        # Segmentation labels
+        plt.subplot(1, 3, 2)
+        plt.title('Segmentation Labels')
+        plt.imshow(labels, cmap='nipy_spectral')
+        plt.axis('off')
+        
+        # Segmentation with centroids
+        plt.subplot(1, 3, 3)
+        plt.title('Segmentation with Centroids')
+        plt.imshow(image_array_uint8)
+        
+        # Plot centroids on the image
+        plt.scatter(initial_coords[:, 0], initial_coords[:, 1], 
+                    c='red', s=50, marker='x', linewidths=2)
+        plt.axis('off')
+        
+        plt.tight_layout()
+        plt.show()
 
     return initial_coords, labels, image_array_uint8
 

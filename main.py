@@ -11,7 +11,7 @@ from helpers import (
     save_visualization,
     visualize_initial_points,
 )
-from initialization_strategies import initialize_coords_from_image_using_random
+from initialization_strategies import initialize_coords_from_image_using_segmentation
 from loss_calculation import combined_loss
 from gaussian_splatting import (
     get_normalized_coords_and_colors,
@@ -70,7 +70,7 @@ image_array = normalized_array
 target_tensor = torch.tensor(image_array, dtype=torch.float32, device=device)
 
 # Generate initial coordinates for Gaussians
-initial_coords = initialize_coords_from_image_using_random(image_array, 343)
+initial_coords, _, _ = initialize_coords_from_image_using_segmentation(image_array, 343)
 visualize_initial_points(image_array, initial_coords)
 
 # The Total Number of Gaussian can change based on the output of the initialization algorithm
