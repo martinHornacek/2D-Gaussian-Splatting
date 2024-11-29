@@ -1,3 +1,4 @@
+import csv
 import numpy as np
 import os
 import torch
@@ -108,4 +109,24 @@ def visualize_initial_points(image_array, initial_coords):
     # Tight layout to prevent cutting off elements
     plt.tight_layout()
     plt.show()
+    plt.close()
+
+
+def save_loss(directory, loss_history):
+    # Save loss history to a CSV file
+    csv_file_path = f'{directory}/loss_history.csv'
+    with open(csv_file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Epoch', 'Loss'])
+        for epoch, loss in enumerate(loss_history, start=1):
+            writer.writerow([epoch, loss])
+
+    # Plot loss after training is complete
+    plt.figure(figsize=(10, 5))
+    plt.plot(loss_history)
+    plt.title('Training Loss Over Epochs')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.tight_layout()
+    plt.savefig(f'{directory}/loss_plot.png')
     plt.close()
